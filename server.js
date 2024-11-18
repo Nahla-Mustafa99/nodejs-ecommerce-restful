@@ -1,11 +1,10 @@
 const express = require("express");
 const dotenv = require("dotenv");
-
 const morgan = require("morgan");
 
-const db_connection = require("./config/database");
-
 dotenv.config({ path: "config.env" });
+const db_connection = require("./config/database");
+const categoryRoutes = require("./routes/categoryRoute");
 
 // Database connection...
 db_connection();
@@ -14,19 +13,17 @@ db_connection();
 const app = express();
 
 // Middlewares...
-// Pasrsing json encoded text body
+// - Pasrsing json encoded text body
 app.use(express.json());
 
-// Development purpose middleware
+// - Development purpose middleware
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
   console.log(`We're on the ${process.env.NODE_ENV} mode `);
 }
 
-// Routes...
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+// Mount Routes...
+app.use("/api/v1/categories", categoryRoutes);
 
 // Server is Listening on port...
 const PORT = process.env.PORT || 8080;
