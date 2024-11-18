@@ -24,6 +24,17 @@ if (process.env.NODE_ENV === "development") {
 
 // Mount Routes...
 app.use("/api/v1/categories", categoryRoutes);
+// Unhandled Routes
+app.all("*", (req, res, next) => {
+  // Create an error and send it to the error handling middleware...
+  const error = new Error(`Can not find this route: ${req.originalUrl} `);
+  next(error.message);
+});
+
+// -Global express error handling Middleware
+app.use((err, req, res, next) => {
+  res.status(400).json({ err });
+});
 
 // Server is Listening on port...
 const PORT = process.env.PORT || 8080;
