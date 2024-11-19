@@ -1,6 +1,7 @@
 const slugify = require("slugify");
 const asyncHandler = require("express-async-handler");
 const Category = require("../models/categoryModel");
+const ApiError = require("../utils/apiError");
 
 // @desc get list of categories
 // @route POST /api/v1/categories
@@ -12,7 +13,8 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 
   const categories = await Category.find({}).skip(skip).limit(resultsPerPage);
   if (!categories) {
-    return res.status(404).json({ msg: "No categories found" });
+    const error = new ApiError("No categories found", 404);
+    return next(error);
   }
   res.status(200).json({ results: categories.length, data: categories });
 });
@@ -34,9 +36,8 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 
   const category = await Category.findById(id);
   if (!category) {
-    return res
-      .status(404)
-      .json({ msg: `No category is found for this id: ${id}` });
+    const error = new ApiError(`No category is found for this id: ${id}`, 404);
+    return next(error);
   }
   res.status(200).json({ data: category });
 });
@@ -54,9 +55,8 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
     { new: true }
   );
   if (!category) {
-    return res
-      .status(404)
-      .json({ msg: `No category is found for this id: ${id}` });
+    const error = new ApiError(`No category is found for this id: ${id}`, 404);
+    return next(error);
   }
   res.status(200).json({ data: category });
 });
@@ -69,9 +69,8 @@ exports.deleteCategory = asyncHandler(async (req, res, next) => {
 
   const category = await Category.findByIdAndDelete(id);
   if (!category) {
-    return res
-      .status(404)
-      .json({ msg: `No category is found for this id: ${id}` });
+    const error = new ApiError(`No category is found for this id: ${id}`, 404);
+    return next(error);
   }
   res.status(204).send();
 });
