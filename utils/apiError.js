@@ -1,4 +1,4 @@
-// @desc This class is responsibe operational errors (can be predicted)
+// @desc This class is responsibe for operational errors (can be predicted)
 class ApiError extends Error {
   constructor(message, statusCode) {
     super(message);
