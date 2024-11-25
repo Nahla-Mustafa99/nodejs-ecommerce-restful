@@ -4,7 +4,7 @@ const Category = require("../models/categoryModel");
 const ApiError = require("../utils/apiError");
 
 // @desc get list of categories
-// @route POST /api/v1/categories
+// @route GET /api/v1/categories
 // @access public
 exports.getCategories = asyncHandler(async (req, res, next) => {
   const curPage = +req.query.page || 1;
@@ -16,7 +16,9 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
     const error = new ApiError("No categories found", 404);
     return next(error);
   }
-  res.status(200).json({ results: categories.length, data: categories });
+  res
+    .status(200)
+    .json({ results: categories.length, page: curPage, data: categories });
 });
 
 // @desc create a new category

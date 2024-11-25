@@ -7,6 +7,7 @@ const db_connection = require("./config/database");
 const categoryRoutes = require("./routes/categoryRoute");
 const ApiError = require("./utils/apiError");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
+const subCategoryRoute = require("./routes/subCategoryRoute");
 
 // Database connection...
 db_connection();
@@ -26,6 +27,9 @@ if (process.env.NODE_ENV === "development") {
 
 // Mount Routes...
 app.use("/api/v1/categories", categoryRoutes);
+
+app.use("/api/v1/subcategories", subCategoryRoute);
+
 // Unhandled Routes
 app.all("*", (req, res, next) => {
   // Create an error and send it to the error handling middleware...
