@@ -21,7 +21,7 @@ const validateSubCategoryNameDuplication = asyncHandler(
     const subCat = await SubCategory.findOne({ name: val });
     if (subCat) {
       throw new Error(
-        `There is already a subcategory with this name ${val} try another one`
+        `There is already a subcategory with this name '${val}' try another one`
       );
     } else return true;
   }
