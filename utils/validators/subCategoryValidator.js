@@ -1,5 +1,29 @@
 const { check } = require("express-validator");
+const asyncHandler = require("express-async-handler");
+
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
+const Category = require("../../models/categoryModel");
+const SubCategory = require("../../models/subCategoryModel");
+
+// Helper function: Validate that the parent category of the subcategory is already exists...
+const validateParentCategoryExistance = asyncHandler(async (val, { req }) => {
+  const parentCat = await Category.findById(val);
+  if (!parentCat) {
+    throw new Error(`Parent category with this id: ${val} is not found`);
+  } else return true;
+});
+
+// Helper function: Validate that the name of the subcategory don't be the same as another subcategory that already exists...
+const validateSubCategoryNameDuplication = asyncHandler(
+  async (val, { req }) => {
+    const subCat = await SubCategory.find({ name: val });
+    if (subCat) {
+      throw new Error(
+        `There is already a subcategory with this name '${val}' try another one`
+      );
+    } else return true;
+  }
+);
 
 exports.createSubCategoryValidator = [
   check("name")
@@ -8,12 +32,14 @@ exports.createSubCategoryValidator = [
     .isLength({ min: 2 })
     .withMessage("Too short subcategory name")
     .isLength({ max: 32 })
-    .withMessage("Too long subcategory name"),
+    .withMessage("Too long subcategory name")
+    .custom(validateSubCategoryNameDuplication),
   check("category")
     .notEmpty()
     .withMessage("subcategory must belong to a parent category")
     .isMongoId()
-    .withMessage("invalid category id format"),
+    .withMessage("invalid category id format")
+    .custom(validateParentCategoryExistance),
   validatorMiddleware,
 ];
 
@@ -24,6 +50,19 @@ exports.getSubCategoryValidator = [
 
 exports.updateSubCategoryValidator = [
   check("id").isMongoId().withMessage("Invalid subcategory id format"),
+  check("name")
+    .optional()
+    .isLength({ min: 2 })
+    .withMessage("Too short subcategory name")
+    .isLength({ max: 32 })
+    .withMessage("Too long subcategory name"),
+  // .custom(validateSubCategoryNameDuplication),
+  check("category")
+    .optional()
+    .isMongoId()
+    .withMessage("invalid category id format")
+    .custom(validateParentCategoryExistance)
+    .withMessage(`Parent category with this id is not found`),
   validatorMiddleware,
 ];
 

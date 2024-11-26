@@ -52,14 +52,26 @@ exports.getSubCategory = asyncHandler(async (req, res, next) => {
 exports.updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name, category } = req.body;
-  const subcategory = await SubCategory.findByIdAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name), category },
-    { new: true }
-  );
+  // const subcategory = await SubCategory.findByIdAndUpdate(
+  //   { _id: id },
+  //   { name, slug: slugify(name), category },
+  //   { new: true }
+  // );
+  const subcategory = await SubCategory.findById(id);
   if (!subcategory) {
     return next(new ApiError("No subcategory found for this id: " + id, 404));
   }
+  const newSubCatName = name || subcategory.name;
+  const newSubCatParent = category || subcategory.category;
+  const updatedSubCat = await SubCategory.updateOne(
+    { _id: id },
+    {
+      name: newSubCatName,
+      slug: slugify(newSubCatName),
+      category: newSubCatParent,
+    },
+    { new: true }
+  );
   res.status(200).json({ data: subcategory });
 });
 
