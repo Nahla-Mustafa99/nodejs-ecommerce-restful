@@ -9,21 +9,33 @@ const SubCategory = require("../../models/subCategoryModel");
 const validateParentCategoryExistance = asyncHandler(async (val, { req }) => {
   const parentCat = await Category.findById(val);
   if (!parentCat) {
-    throw new Error(`Parent category with this id: ${val} is not found`);
+    throw new Error(
+      `Parent category with this id${val ? `: ${val}` : ""} is not found`
+    );
   } else return true;
 });
 
 // Helper function: Validate that the name of the subcategory don't be the same as another subcategory that already exists...
 const validateSubCategoryNameDuplication = asyncHandler(
   async (val, { req }) => {
-    const subCat = await SubCategory.find({ name: val });
+    const subCat = await SubCategory.findOne({ name: val });
     if (subCat) {
       throw new Error(
-        `There is already a subcategory with this name '${val}' try another one`
+        `There is already a subcategory with this name ${val} try another one`
       );
     } else return true;
   }
 );
+
+// Validation for nested route GET /api/v1/categories/673b1b021c90ca7c7df5d761/subcategories
+exports.getSubCategoriesOfCategoryValidator = [
+  check("categoryId")
+    .optional()
+    .isMongoId()
+    .withMessage("Invalid category id format")
+    .custom(validateParentCategoryExistance),
+  validatorMiddleware,
+];
 
 exports.createSubCategoryValidator = [
   check("name")

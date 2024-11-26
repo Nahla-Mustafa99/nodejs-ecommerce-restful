@@ -4,6 +4,16 @@ const slugify = require("slugify");
 const ApiError = require("../utils/apiError");
 const SubCategory = require("../models/subCategoryModel");
 
+// @desc Helper function: insure validatation of categoryId that comes from params(if any)...
+// @route For nested route: POST /api/v1/categories/categoryId/subcategories
+exports.insertCatIdfromParamsIntoBody = (req, res, next) => {
+  const { categoryId } = req.params;
+  if (categoryId) {
+    req.body.category = categoryId;
+  }
+  return next();
+};
+
 // @desc create subcategory
 // @route POST /api/v1/subcategories
 // @access Private
@@ -25,7 +35,9 @@ exports.getSubCategories = asyncHandler(async (req, res, next) => {
   const resultsPerPage = +req.query.limit || 5;
   const skip = (page - 1) * resultsPerPage;
 
-  const subcategories = await SubCategory.find({})
+  const categoryId = req.params?.categoryId;
+  let filterObj = categoryId ? { category: categoryId } : {};
+  const subcategories = await SubCategory.find(filterObj)
     .skip(skip)
     .limit(resultsPerPage);
 
@@ -52,11 +64,7 @@ exports.getSubCategory = asyncHandler(async (req, res, next) => {
 exports.updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name, category } = req.body;
-  // const subcategory = await SubCategory.findByIdAndUpdate(
-  //   { _id: id },
-  //   { name, slug: slugify(name), category },
-  //   { new: true }
-  // );
+
   const subcategory = await SubCategory.findById(id);
   if (!subcategory) {
     return next(new ApiError("No subcategory found for this id: " + id, 404));
@@ -72,7 +80,7 @@ exports.updateSubCategory = asyncHandler(async (req, res, next) => {
     },
     { new: true }
   );
-  res.status(200).json({ data: subcategory });
+  res.status(200).json({ data: updatedSubCat });
 });
 
 // @desc delete a specific subcategory
