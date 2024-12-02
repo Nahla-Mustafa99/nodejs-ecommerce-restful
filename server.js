@@ -9,6 +9,7 @@ const ApiError = require("./utils/apiError");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
 const subCategoryRoute = require("./routes/subCategoryRoute");
 const brandRoute = require("./routes/brandRoute");
+const productRoute = require("./routes/productRoute");
 
 // Database connection...
 db_connection();
@@ -32,6 +33,8 @@ app.use("/api/v1/categories", categoryRoutes);
 app.use("/api/v1/subcategories", subCategoryRoute);
 
 app.use("/api/v1/brands", brandRoute);
+
+app.use("/api/v1/products", productRoute);
 
 // Unhandled Routes
 app.all("*", (req, res, next) => {

@@ -7,6 +7,7 @@ const subCategorySchema = new Schema(
     name: {
       type: String,
       required: [true, "Subcategory name is required!"],
+      trim: true,
       unique: [true, "Subcategory name must be unique"],
       minlength: [2, "Too short Subcategory name"],
       maxlength: [32, "Too long Subcategory name"],
@@ -14,6 +15,7 @@ const subCategorySchema = new Schema(
     slug: { type: String, lowercase: true, required: [true, "slug required!"] },
     category: {
       type: mongoose.Types.ObjectId,
+      ref: "Category",
       required: [true, "Subcategory must belong to a parent category"],
     },
   },
