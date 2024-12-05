@@ -3,6 +3,7 @@ const slugify = require("slugify");
 
 const ApiError = require("../utils/apiError");
 const SubCategory = require("../models/subCategoryModel");
+const ApiFeatures = require("../utils/apiFeatures");
 
 // @desc Helper function: insure validatation of categoryId that comes from params(if any)...
 // @route For nested route: POST /api/v1/categories/categoryId/subcategories
@@ -31,19 +32,27 @@ exports.createSubCategory = asyncHandler(async (req, res, next) => {
 // @route GET /api/v1/subcategories
 // @access Public
 exports.getSubCategories = asyncHandler(async (req, res, next) => {
-  const page = +req.query.page || 1;
-  const resultsPerPage = +req.query.limit || 5;
-  const skip = (page - 1) * resultsPerPage;
+  const documentsCount = await SubCategory.countDocuments();
 
   const categoryId = req.params?.categoryId;
   let filterObj = categoryId ? { category: categoryId } : {};
-  const subcategories = await SubCategory.find(filterObj)
-    .skip(skip)
-    .limit(resultsPerPage);
 
-  return res
-    .status(200)
-    .json({ results: subcategories.length, page: page, data: subcategories });
+  const apiFeatures = new ApiFeatures(SubCategory.find(filterObj), req.query)
+    .paginate(documentsCount)
+    .filter()
+    .sort()
+    .fieldLimit()
+    .search("SubCategory");
+
+  // Execute query
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const subcategories = await mongooseQuery;
+
+  return res.status(200).json({
+    results: subcategories.length,
+    paginationResult,
+    data: subcategories,
+  });
 });
 
 // @desc get a specific subcategory
