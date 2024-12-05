@@ -55,12 +55,12 @@ exports.getBrand = asyncHandler(async (req, res, next) => {
 exports.updateBrand = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
   const { name } = req.body;
-
-  const brand = await Brand.findOneAndUpdate(
-    { _id: id },
-    { name, slug: slugify(name) },
-    { new: true }
-  );
+  if (name) {
+    req.body.slug = slugify(name);
+  }
+  const brand = await Brand.findByIdAndUpdate({ _id: id }, req.body, {
+    new: true,
+  });
   if (!brand) {
     const error = new ApiError(`No brand is found for this id: ${id}`, 404);
     return next(error);

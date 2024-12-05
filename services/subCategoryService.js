@@ -72,24 +72,20 @@ exports.getSubCategory = asyncHandler(async (req, res, next) => {
 // @access Private
 exports.updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name, category } = req.body;
+  if (req.body.name) {
+    req.body.slug = slugify(req.body.name);
+  }
+  const subcategory = await SubCategory.findByIdAndUpdate(
+    { _id: id },
+    req.body,
+    { new: true }
+  );
 
-  const subcategory = await SubCategory.findById(id);
   if (!subcategory) {
     return next(new ApiError("No subcategory found for this id: " + id, 404));
   }
-  const newSubCatName = name || subcategory.name;
-  const newSubCatParent = category || subcategory.category;
-  const updatedSubCat = await SubCategory.updateOne(
-    { _id: id },
-    {
-      name: newSubCatName,
-      slug: slugify(newSubCatName),
-      category: newSubCatParent,
-    },
-    { new: true }
-  );
-  res.status(200).json({ data: updatedSubCat });
+
+  res.status(200).json({ data: subcategory });
 });
 
 // @desc delete a specific subcategory
