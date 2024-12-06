@@ -60,5 +60,10 @@ const productSchema = new Schema(
   { timestamps: true, strict: "throw" }
 );
 
+productSchema.pre(/^find/, function (next) {
+  this.populate({ path: "category", select: "name" });
+  next();
+});
+
 // 2- export the model that build upon that shcema
 module.exports = mongoose.model("Product", productSchema);

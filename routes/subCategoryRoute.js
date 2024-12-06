@@ -15,13 +15,14 @@ const {
   updateSubCategory,
   deleteSubCategory,
   insertCatIdfromParamsIntoBody,
+  createFilterObj,
 } = require("../services/subCategoryService");
 
 const router = express.Router({ mergeParams: true });
 
 router
   .route("/")
-  .get(getSubCategoriesOfCategoryValidator, getSubCategories)
+  .get(getSubCategoriesOfCategoryValidator, createFilterObj, getSubCategories)
   .post(
     insertCatIdfromParamsIntoBody,
     createSubCategoryValidator,

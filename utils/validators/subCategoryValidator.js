@@ -1,5 +1,6 @@
 const { check } = require("express-validator");
 const asyncHandler = require("express-async-handler");
+const slugify = require("slugify");
 
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel");
@@ -45,7 +46,11 @@ exports.createSubCategoryValidator = [
     .withMessage("Too short subcategory name")
     .isLength({ max: 32 })
     .withMessage("Too long subcategory name")
-    .custom(validateSubCategoryNameDuplication),
+    .custom(validateSubCategoryNameDuplication)
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   check("category")
     .notEmpty()
     .withMessage("subcategory must belong to a parent category")
@@ -67,8 +72,12 @@ exports.updateSubCategoryValidator = [
     .isLength({ min: 2 })
     .withMessage("Too short subcategory name")
     .isLength({ max: 32 })
-    .withMessage("Too long subcategory name"),
-  // .custom(validateSubCategoryNameDuplication),
+    .withMessage("Too long subcategory name")
+    // .custom(validateSubCategoryNameDuplication),
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   check("category")
     .optional()
     .isMongoId()

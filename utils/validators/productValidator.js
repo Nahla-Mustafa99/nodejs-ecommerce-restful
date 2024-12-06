@@ -1,4 +1,6 @@
 const { param, check, body } = require("express-validator");
+const slugify = require("slugify");
+
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel");
 const SubCategory = require("../../models/subCategoryModel");
@@ -61,7 +63,11 @@ exports.createProductValidator = [
     .isLength({ min: 3 })
     .withMessage("Product title must be at least 3 chars")
     .isLength({ max: 100 })
-    .withMessage("Too long Product title"),
+    .withMessage("Too long Product title")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   body("description")
     .notEmpty()
     .withMessage("Product description is required")
@@ -140,7 +146,11 @@ exports.updateProductValidator = [
     .isLength({ min: 3 })
     .withMessage("Too short Product title")
     .isLength({ max: 100 })
-    .withMessage("Too long Product title"),
+    .withMessage("Too long Product title")
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
   body("description")
     .optional()
     .isLength({ min: 20 })
