@@ -15,14 +15,29 @@ const {
   deleteProduct,
 } = require("../services/productService");
 
+const { isAuth, isAllowedTo } = require("../services/authService");
+
 const router = express.Router();
 
-router.route("/").get(getProducts).post(createProductValidator, createProduct);
+router
+  .route("/")
+  .get(getProducts)
+  .post(
+    isAuth,
+    isAllowedTo("admin", "manager"),
+    createProductValidator,
+    createProduct
+  );
 
 router
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(updateProductValidator, updateProduct)
-  .delete(deleteProductValidator, deleteProduct);
+  .put(
+    isAuth,
+    isAllowedTo("admin", "manager"),
+    updateProductValidator,
+    updateProduct
+  )
+  .delete(isAuth, isAllowedTo("admin"), deleteProductValidator, deleteProduct);
 
 module.exports = router;

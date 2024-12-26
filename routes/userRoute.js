@@ -20,7 +20,6 @@ const {
   getLoggedUserData,
   updateLoggedUserPassword,
   updateLoggedUserData,
-  deleteLoggedUserData,
 } = require("../services/userService");
 
 const { isAuth, isAllowedTo } = require("../services/authService");
