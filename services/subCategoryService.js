@@ -1,8 +1,5 @@
-const asyncHandler = require("express-async-handler");
-const slugify = require("slugify");
-
 const SubCategory = require("../models/subCategoryModel");
-const ApiFeatures = require("../utils/apiFeatures");
+
 const {
   deleteOne,
   getAll,

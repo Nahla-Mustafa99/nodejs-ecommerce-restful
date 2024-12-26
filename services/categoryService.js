@@ -11,6 +11,7 @@ const {
 // @route GET /api/v1/categories
 // @access public
 exports.getCategories = getAll(Category);
+
 // @desc create a new category
 // @route POST /api/v1/categories
 // @access private

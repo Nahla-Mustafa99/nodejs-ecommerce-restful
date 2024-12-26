@@ -29,9 +29,19 @@ exports.getAll = (Model, modelName = "") =>
     const { mongooseQuery, paginationResult } = apiFeatures;
     const documents = await mongooseQuery;
 
+    let data;
+    if (modelName === "User") {
+      data = documents.map((i) => {
+        delete i._doc.password;
+        return i;
+      });
+    } else {
+      data = documents;
+    }
+
     return res
       .status(200)
-      .json({ results: documents.length, paginationResult, data: documents });
+      .json({ results: documents.length, paginationResult, data });
   });
 
 //
@@ -42,6 +52,8 @@ exports.getOne = (Model) =>
     if (!document) {
       return next(new ApiError("No document found for this id: " + id, 404));
     }
+
+    if (document._doc.password) delete document._doc.password;
     res.status(200).json({ data: document });
   });
 
@@ -60,6 +72,7 @@ exports.updateOne = (Model) =>
       return next(error);
     }
 
+    if (document._doc.password) delete document._doc.password;
     res.status(200).json({ data: document });
   });
 
