@@ -130,7 +130,7 @@ exports.isAuth = asyncHandler(async (req, res, next) => {
 exports.isAllowedTo = (...roles) =>
   asyncHandler(async (req, res, next) => {
     const currentUserRole = req.user.role;
-    console.log(req.user);
+
     // if (user.role !== "admin" && user.role !== "manager") {
     if (!roles.includes(currentUserRole)) {
       const error = new ApiError("Not authorized", 403);

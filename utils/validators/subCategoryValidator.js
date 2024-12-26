@@ -82,8 +82,7 @@ exports.updateSubCategoryValidator = [
     .optional()
     .isMongoId()
     .withMessage("invalid category id format")
-    .custom(validateParentCategoryExistance)
-    .withMessage(`Parent category with this id is not found`),
+    .custom(validateParentCategoryExistance),
   validatorMiddleware,
 ];
 

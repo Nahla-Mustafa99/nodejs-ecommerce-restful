@@ -47,5 +47,7 @@ router
     deleteCategory
   );
 
+// Nested route
 router.use("/:categoryId/subcategories", subCategoryRoute);
+
 module.exports = router;

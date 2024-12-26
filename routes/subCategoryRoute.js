@@ -20,6 +20,7 @@ const {
 
 const { isAuth, isAllowedTo } = require("../services/authService");
 
+// mergeParams: Allow us to access parameters on other routers such as categoryId from category router
 const router = express.Router({ mergeParams: true });
 
 router
