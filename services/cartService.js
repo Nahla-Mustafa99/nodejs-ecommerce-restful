@@ -7,7 +7,7 @@ const Product = require("../models/productModel");
 
 // @desc    Get cart of the authenticated(loggedIn) user
 // @route   GET /api/v1/cart
-// @access  Private/Protect
+// @access  Private/User
 exports.getCart = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   let cart = await Cart.findOne({ user: userId });
@@ -29,7 +29,7 @@ exports.getCart = asyncHandler(async (req, res, next) => {
 
 // @desc   Add a product to the cart of the authenticated(loggedIn) user
 // @route  POST /api/v1/cart
-// @access Protected/User
+// @access Private/User
 exports.addProdToCart = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { productId, color } = req.body;
@@ -93,7 +93,7 @@ exports.addProdToCart = asyncHandler(async (req, res, next) => {
 
 // @desc    Delete a specific cart item
 // @route   DELETE /api/v1/cart/:itemId
-// @access  Protected/User
+// @access  Private/User
 exports.removeSpecificCartItem = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
@@ -133,7 +133,7 @@ exports.removeSpecificCartItem = asyncHandler(async (req, res, next) => {
 
 // @desc   Update specific cart item quantity
 // @route  PUT api/v1/cart/:itemId
-// @access Protected/User
+// @access Private/User
 exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
   const { itemId } = req.params;
@@ -187,7 +187,7 @@ exports.updateCartItemQuantity = asyncHandler(async (req, res, next) => {
 
 // @desc   Clear cart of the authenticated(loggedIn) user
 // @route  DELETE /api/v1/cart
-// @access Protected/User
+// @access Private/User
 exports.clearCart = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
 
