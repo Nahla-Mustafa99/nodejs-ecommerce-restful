@@ -13,6 +13,7 @@ const productRoute = require("./routes/productRoute");
 const userRoute = require("./routes/userRoute");
 const authRoute = require("./routes/authRoute");
 const wishlistRoute = require("./routes/wishlistRoute");
+const cartRoute = require("./routes/cartRoute");
 
 // Database connection...
 db_connection();
@@ -44,6 +45,8 @@ app.use("/api/v1/users", userRoute);
 app.use("/api/v1/auth", authRoute);
 
 app.use("/api/v1/wishlist", wishlistRoute);
+
+app.use("/api/v1/cart", cartRoute);
 
 // Unhandled Routes
 app.all("*", (req, res, next) => {
