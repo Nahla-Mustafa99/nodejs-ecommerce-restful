@@ -49,7 +49,7 @@ const userSchema = new Schema(
       {
         id: { type: mongoose.Schema.Types.ObjectId },
         // name
-        alias: String,
+        alias: { type: String, unique: [true, "alias of address is unique"] },
         details: String,
         phone: String,
         city: String,
