@@ -15,6 +15,8 @@ const {
   deleteProduct,
 } = require("../services/productService");
 
+const reviewsRoute = require("../routes/reviewRoute");
+
 const { isAuth, isAllowedTo } = require("../services/authService");
 
 const router = express.Router();
@@ -28,6 +30,11 @@ router
     createProductValidator,
     createProduct
   );
+
+// Nested route:
+// GET    /products/:productId/reviews
+// POST   /products/:productId/reviews
+router.use("/:productId/reviews", reviewsRoute);
 
 router
   .route("/:id")

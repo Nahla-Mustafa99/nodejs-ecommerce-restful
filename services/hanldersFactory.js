@@ -13,7 +13,10 @@ exports.createOne = (Model) =>
 exports.getAll = (Model, modelName = "") =>
   asyncHandler(async (req, res, next) => {
     // const documentsCount = await Model.countDocuments();
-    const apiFeatures = new ApiFeatures(Model.find(), req.query)
+    const apiFeatures = new ApiFeatures(
+      Model.find(req.filterObj ? req.filterObj : {}),
+      req.query
+    )
       .search(modelName)
       .filter();
     const documentsCount = await apiFeatures.mongooseQuery.countDocuments();

@@ -8,8 +8,8 @@ const {
   createOne,
 } = require("./hanldersFactory");
 
-// @desc Helper function: insure validatation of categoryId that comes from params(if any)...
-// @route For nested route: GET /api/v1/categories/categoryId/subcategories
+// @desc Helper function: insure validation of categoryId that comes from params(if any)...
+// @route For nested route: GET /api/v1/categories/:categoryId/subcategories
 exports.createFilterObj = (req, res, next) => {
   const categoryId = req.params?.categoryId;
   if (categoryId) {
@@ -18,8 +18,8 @@ exports.createFilterObj = (req, res, next) => {
   return next();
 };
 
-// @desc Helper function: insure validatation of categoryId that comes from params(if any)...
-// @route For nested route: POST /api/v1/categories/categoryId/subcategories
+// @desc Helper function: insure validation of categoryId that comes from params(if any)...
+// @route For nested route: POST /api/v1/categories/:categoryId/subcategories
 exports.insertCatIdfromParamsIntoBody = (req, res, next) => {
   const { categoryId } = req.params;
   if (categoryId) {

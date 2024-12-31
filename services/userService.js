@@ -35,8 +35,8 @@ exports.getUser = factory.getOne(User);
 // @access Private(Admin)
 exports.updateUser = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name, slug, email, phone, profileImg, role } = req.body;
-  const editObj = { name, slug, phone, email, profileImg, role };
+  const { name, slug, email, phone, profileImg, role, active } = req.body;
+  const editObj = { name, slug, phone, email, profileImg, role, active };
 
   const user = await User.findByIdAndUpdate({ _id: id }, editObj, {
     new: true,

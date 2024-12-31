@@ -58,6 +58,8 @@ class ApiFeatures {
           { title: { $regex: keword, $options: "i" } },
           { description: { $regex: keword, $options: "i" } },
         ];
+      } else if (modelName === "Review") {
+        searchQuery.$or = [{ title: { $regex: keword, $options: "i" } }];
       } else {
         searchQuery.$or = [{ name: { $regex: keword, $options: "i" } }];
       }
