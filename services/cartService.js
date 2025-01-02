@@ -4,6 +4,7 @@ const { default: mongoose } = require("mongoose");
 const ApiError = require("../utils/apiError");
 const Cart = require("../models/cartModel");
 const Product = require("../models/productModel");
+const Coupon = require("../models/couponModel");
 
 // @desc    Get cart of the authenticated(loggedIn) user
 // @route   GET /api/v1/cart
@@ -202,4 +203,42 @@ exports.clearCart = asyncHandler(async (req, res, next) => {
   }
 
   res.status(204).send();
+});
+
+// @desc   Apply a coupon to get a discout on  the logged user cart
+// @route  POST /api/v1/cart/applyCoupon
+// @access Private/User
+exports.applyCoupon = asyncHandler(async (req, res, next) => {
+  const { coupon: couponName } = req.body;
+  const userId = req.user._id;
+
+  // Get the coupon, check coupon existace and its expiry date
+  const coupon = await Coupon.findOne({
+    name: couponName,
+    expire: { $gt: Date.now() },
+  });
+  if (!coupon) {
+    const error = new ApiError(
+      `This coupon '${couponName}' is invalid or expired`,
+      404
+    );
+    return next(error);
+  }
+
+  const cart = await Cart.findOne({ user: userId });
+
+  // Calculate price after priceAfterDiscount
+  const totalPrice = cart.totalCartPrice;
+  const totalPriceAfterDiscount = (
+    totalPrice -
+    (totalPrice * coupon.discount) / 100
+  ).toFixed(2);
+
+  cart.totalPriceAfterDiscount = totalPriceAfterDiscount;
+  cart.save();
+  return res.status(200).json({
+    status: "success",
+    numOfCartItems: cart.cartItems.length,
+    data: cart,
+  });
 });

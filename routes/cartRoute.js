@@ -6,6 +6,7 @@ const {
   removeSpecificCartItem,
   updateCartItemQuantity,
   clearCart,
+  applyCoupon,
 } = require("../services/cartService");
 
 const { isAuth, isAllowedTo } = require("../services/authService");
@@ -21,4 +22,5 @@ router
   .put(updateCartItemQuantity)
   .delete(removeSpecificCartItem);
 
+router.post("/applyCoupon", applyCoupon);
 module.exports = router;

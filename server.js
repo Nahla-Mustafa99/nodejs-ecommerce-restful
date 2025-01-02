@@ -16,6 +16,7 @@ const wishlistRoute = require("./routes/wishlistRoute");
 const cartRoute = require("./routes/cartRoute");
 const addressesRoute = require("./routes/addressesRoute");
 const reviewRoute = require("./routes/reviewRoute");
+const couponRoute = require("./routes/couponRoute");
 
 // Database connection...
 db_connection();
@@ -53,6 +54,8 @@ app.use("/api/v1/cart", cartRoute);
 app.use("/api/v1/addresses", addressesRoute);
 
 app.use("/api/v1/reviews", reviewRoute);
+
+app.use("/api/v1/coupons", couponRoute);
 
 // Unhandled Routes
 app.all("*", (req, res, next) => {
