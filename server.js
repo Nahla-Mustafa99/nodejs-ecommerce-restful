@@ -17,12 +17,21 @@ const cartRoute = require("./routes/cartRoute");
 const addressesRoute = require("./routes/addressesRoute");
 const reviewRoute = require("./routes/reviewRoute");
 const couponRoute = require("./routes/couponRoute");
+const orderRoute = require("./routes/orderRoute");
+const { webhookCheckout } = require("./services/orderService");
 
 // Database connection...
 db_connection();
 
 // express app
 const app = express();
+
+// Checkout webhook
+app.post(
+  "/webhook-checkout",
+  express.raw({ type: "application/json" }),
+  webhookCheckout
+);
 
 // Middlewares...
 // - Pasrsing json encoded text body
@@ -56,6 +65,8 @@ app.use("/api/v1/addresses", addressesRoute);
 app.use("/api/v1/reviews", reviewRoute);
 
 app.use("/api/v1/coupons", couponRoute);
+
+app.use("/api/v1/orders", orderRoute);
 
 // Unhandled Routes
 app.all("*", (req, res, next) => {
