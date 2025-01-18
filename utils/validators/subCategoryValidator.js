@@ -16,18 +16,6 @@ const validateParentCategoryExistance = asyncHandler(async (val, { req }) => {
   } else return true;
 });
 
-// Helper function: Validate that the name of the subcategory don't be the same as another subcategory that already exists...
-const validateSubCategoryNameDuplication = asyncHandler(
-  async (val, { req }) => {
-    const subCat = await SubCategory.findOne({ name: val });
-    if (subCat) {
-      throw new Error(
-        `There is already a subcategory with this name '${val}' try another one`
-      );
-    } else return true;
-  }
-);
-
 // Validation for nested route GET /api/v1/categories/673b1b021c90ca7c7df5d761/subcategories
 exports.getSubCategoriesOfCategoryValidator = [
   check("categoryId")
@@ -46,10 +34,19 @@ exports.createSubCategoryValidator = [
     .withMessage("Too short subcategory name")
     .isLength({ max: 32 })
     .withMessage("Too long subcategory name")
-    .custom(validateSubCategoryNameDuplication)
     .custom((val, { req }) => {
-      req.body.slug = slugify(val);
-      return true;
+      return SubCategory.findOne({ name: val }).then((subCat) => {
+        if (subCat) {
+          return Promise.reject(
+            new Error(
+              `There is already a subcategory with this name '${val}' try another one`
+            )
+          );
+        } else {
+          req.body.slug = slugify(val);
+          return true;
+        }
+      });
     }),
   check("category")
     .notEmpty()
@@ -57,6 +54,7 @@ exports.createSubCategoryValidator = [
     .isMongoId()
     .withMessage("invalid category id format")
     .custom(validateParentCategoryExistance),
+
   validatorMiddleware,
 ];
 
@@ -73,10 +71,19 @@ exports.updateSubCategoryValidator = [
     .withMessage("Too short subcategory name")
     .isLength({ max: 32 })
     .withMessage("Too long subcategory name")
-    // .custom(validateSubCategoryNameDuplication),
     .custom((val, { req }) => {
-      req.body.slug = slugify(val);
-      return true;
+      return SubCategory.findOne({ name: val }).then((subCat) => {
+        if (subCat && subCat._id.toString() !== req.params.id.toString()) {
+          return Promise.reject(
+            new Error(
+              `There is already a subcategory with this name '${val}' try another one`
+            )
+          );
+        } else {
+          req.body.slug = slugify(val);
+          return true;
+        }
+      });
     }),
   check("category")
     .optional()
