@@ -5,21 +5,10 @@ const path = require("path");
 
 dotenv.config({ path: "config.env" });
 const db_connection = require("./config/database");
-const categoryRoutes = require("./routes/categoryRoute");
 const ApiError = require("./utils/apiError");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
-const subCategoryRoute = require("./routes/subCategoryRoute");
-const brandRoute = require("./routes/brandRoute");
-const productRoute = require("./routes/productRoute");
-const userRoute = require("./routes/userRoute");
-const authRoute = require("./routes/authRoute");
-const wishlistRoute = require("./routes/wishlistRoute");
-const cartRoute = require("./routes/cartRoute");
-const addressesRoute = require("./routes/addressesRoute");
-const reviewRoute = require("./routes/reviewRoute");
-const couponRoute = require("./routes/couponRoute");
-const orderRoute = require("./routes/orderRoute");
 const { webhookCheckout } = require("./services/orderService");
+const mountRoutes = require("./routes");
 
 // Database connection...
 db_connection();
@@ -46,29 +35,7 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Mount Routes...
-app.use("/api/v1/categories", categoryRoutes);
-
-app.use("/api/v1/subcategories", subCategoryRoute);
-
-app.use("/api/v1/brands", brandRoute);
-
-app.use("/api/v1/products", productRoute);
-
-app.use("/api/v1/users", userRoute);
-
-app.use("/api/v1/auth", authRoute);
-
-app.use("/api/v1/wishlist", wishlistRoute);
-
-app.use("/api/v1/cart", cartRoute);
-
-app.use("/api/v1/addresses", addressesRoute);
-
-app.use("/api/v1/reviews", reviewRoute);
-
-app.use("/api/v1/coupons", couponRoute);
-
-app.use("/api/v1/orders", orderRoute);
+mountRoutes(app);
 
 // Unhandled Routes
 app.all("*", (req, res, next) => {
