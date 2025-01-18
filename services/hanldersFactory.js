@@ -176,7 +176,7 @@ const deleteRelatedImages = asyncHandler(
     if (imagesToDelete.length > 0)
       imagesToDelete.forEach((img) =>
         fileHelper.deleteFile(
-          `uploads/${img.replace(process.env.BASE_URL, "")}`
+          `uploads/${img?.replace(process.env.BASE_URL, "")}`
         )
       );
     return;
