@@ -93,7 +93,7 @@ exports.updateAddress = asyncHandler(async (req, res, next) => {
 
   user.addresses[addressIndex] = { ...address._doc, ...editObj };
   await user.save();
-  res.status(200).json({ data: user.addresses });
+  res.status(200).json({ data: user.addresses[addressIndex] });
 });
 
 // @desc   Delete a specific address of user addresses

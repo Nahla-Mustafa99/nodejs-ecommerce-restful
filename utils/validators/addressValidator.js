@@ -71,7 +71,13 @@ exports.updateAddressValidator = [
         .notEmpty()
         .custom((val, { req }) => {
           return User.findById(req.user._id).then((user) => {
-            if (user.addresses.find((add) => add.alias === val)) {
+            if (
+              user.addresses.find(
+                (add) =>
+                  add.alias === val &&
+                  req.params.addressId.toString() !== add._id.toString()
+              )
+            ) {
               return Promise.reject(
                 new Error(
                   `This address alias '${val}' exists already, please pick a different one.`
