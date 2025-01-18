@@ -13,6 +13,8 @@ const {
   getProduct,
   updateProduct,
   deleteProduct,
+  uploadProductImages,
+  setProductImages,
 } = require("../services/productService");
 
 const reviewsRoute = require("../routes/reviewRoute");
@@ -27,6 +29,8 @@ router
   .post(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadProductImages,
+    setProductImages,
     createProductValidator,
     createProduct
   );
@@ -42,6 +46,8 @@ router
   .put(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadProductImages,
+    setProductImages,
     updateProductValidator,
     updateProduct
   )

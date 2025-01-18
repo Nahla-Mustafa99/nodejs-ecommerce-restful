@@ -7,6 +7,27 @@ const {
   createOne,
 } = require("./hanldersFactory");
 
+const uploadwithMulterMiddleware = require("../middlewares/uploadImageMiddleware");
+
+// Upload single image
+exports.uploadCategoryImage = uploadwithMulterMiddleware({
+  destFolderName: "categories",
+  fileNamePrefix: "category",
+}).single("image");
+
+// Set image path into body
+exports.setCategoryImage = (req, res, next) => {
+  // Accept only files or empty input.
+  if (req.body.image) {
+    delete req.body.image;
+  }
+
+  if (req.file) {
+    req.body.image = req.file.filename;
+  }
+  next();
+};
+
 // @desc get list of categories
 // @route GET /api/v1/categories
 // @access public

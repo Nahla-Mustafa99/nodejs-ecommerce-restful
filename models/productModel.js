@@ -65,5 +65,30 @@ productSchema.pre(/^find/, function (next) {
   next();
 });
 
+const setFullImageURL = (doc) => {
+  if (doc.imageCover) {
+    const imageUrl = `${process.env.BASE_URL}/products/${doc.imageCover}`;
+    doc.imageCover = imageUrl;
+  }
+  if (doc.images) {
+    const imagesList = [];
+    doc.images.forEach((image) => {
+      const imageUrl = `${process.env.BASE_URL}/products/${image}`;
+      imagesList.push(imageUrl);
+    });
+    doc.images = imagesList;
+  }
+};
+
+// findOne, findAll and update
+productSchema.post("init", (doc) => {
+  setFullImageURL(doc);
+});
+
+// create
+productSchema.post("save", (doc) => {
+  setFullImageURL(doc);
+});
+
 // 2- export the model that build upon that shcema
 module.exports = mongoose.model("Product", productSchema);

@@ -15,6 +15,8 @@ const {
   getCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryImage,
+  setCategoryImage,
 } = require("../services/categoryService");
 
 const { isAuth, isAllowedTo } = require("../services/authService");
@@ -27,6 +29,8 @@ router
   .post(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadCategoryImage,
+    setCategoryImage,
     createCategoryValidator,
     createCategory
   );
@@ -37,6 +41,8 @@ router
   .put(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadCategoryImage,
+    setCategoryImage,
     updateCategoryValidator,
     updateCategory
   )

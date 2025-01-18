@@ -20,6 +20,8 @@ const {
   getLoggedUserData,
   updateLoggedUserPassword,
   updateLoggedUserData,
+  setUserImage,
+  uploadUserImage,
 } = require("../services/userService");
 
 const { isAuth, isAllowedTo } = require("../services/authService");
@@ -30,7 +32,13 @@ const router = express.Router();
 router.use(isAuth);
 
 router.get("/getMe", getLoggedUserData, getUser);
-router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
+router.put(
+  "/updateMe",
+  uploadUserImage,
+  setUserImage,
+  updateLoggedUserValidator,
+  updateLoggedUserData
+);
 router.put(
   "/changeMyPassword",
   updateLoggedUserPasswordValidator,
@@ -40,16 +48,21 @@ router.put(
 // Control access some routes: next routes (only for admin or manager accounts)
 router.use(isAllowedTo("admin", "manager"));
 
-router.route("/").get(getUsers).post(createUserValidator, createUser);
+router
+  .route("/")
+  .get(getUsers)
+  .post(uploadUserImage, setUserImage, createUserValidator, createUser);
+
 router.put(
   "/changePassword/:id",
   changeUserPasswordValidator,
   changeUserPassword
 );
+
 router
   .route("/:id")
   .get(getUserValidator, getUser)
-  .put(updateUserValidator, updateUser)
+  .put(uploadUserImage, setUserImage, updateUserValidator, updateUser)
   .delete(deleteUserValidator, deleteUser);
 
 module.exports = router;

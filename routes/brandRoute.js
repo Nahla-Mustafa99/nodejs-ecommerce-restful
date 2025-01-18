@@ -13,6 +13,8 @@ const {
   getBrand,
   updateBrand,
   deleteBrand,
+  uploadBrandImage,
+  setBrandImage,
 } = require("../services/brandService");
 
 const { isAuth, isAllowedTo } = require("../services/authService");
@@ -25,6 +27,8 @@ router
   .post(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadBrandImage,
+    setBrandImage,
     createBrandValidator,
     createBrand
   );
@@ -35,6 +39,8 @@ router
   .put(
     isAuth,
     isAllowedTo("admin", "manager"),
+    uploadBrandImage,
+    setBrandImage,
     updateBrandValidator,
     updateBrand
   )

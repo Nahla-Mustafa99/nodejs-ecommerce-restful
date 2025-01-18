@@ -69,4 +69,20 @@ const userSchema = new Schema(
   { timestamps: true }
 );
 
+const setFullImageURL = (doc) => {
+  if (doc.profileImg) {
+    const imageUrl = `${process.env.BASE_URL}/users/${doc.profileImg}`;
+    doc.profileImg = imageUrl;
+  }
+};
+// findOne, findAll and update
+userSchema.post("init", (doc) => {
+  setFullImageURL(doc);
+});
+
+// create
+userSchema.post("save", (doc) => {
+  setFullImageURL(doc);
+});
+
 module.exports = mongoose.model("User", userSchema);

@@ -7,6 +7,27 @@ const {
   createOne,
 } = require("./hanldersFactory");
 
+const uploadwithMulterMiddleware = require("../middlewares/uploadImageMiddleware");
+
+// Upload single image
+exports.uploadBrandImage = uploadwithMulterMiddleware({
+  destFolderName: "brands",
+  fileNamePrefix: "brand",
+}).single("image");
+
+// Set image path into body
+exports.setBrandImage = (req, res, next) => {
+  // Accept only files or empty input.
+  if (req.body.image) {
+    delete req.body.image;
+  }
+
+  if (req.file) {
+    req.body.image = req.file.filename;
+  }
+  next();
+};
+
 // @desc create a new brand
 // @route POST /api/v1/brands
 // @access private

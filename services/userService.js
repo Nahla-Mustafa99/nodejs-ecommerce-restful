@@ -5,6 +5,27 @@ const ApiError = require("../utils/apiError");
 const factory = require("./hanldersFactory");
 const User = require("../models/userModel");
 const generateToken = require("../utils/generateToken");
+const fileHelper = require("../utils/fileHelper");
+
+const uploadwithMulterMiddleware = require("../middlewares/uploadImageMiddleware");
+
+// Upload single image
+exports.uploadUserImage = uploadwithMulterMiddleware({
+  destFolderName: "users",
+  fileNamePrefix: "userProfile",
+}).single("profileImg");
+
+// Set image path into body
+exports.setUserImage = (req, res, next) => {
+  // Accept only files or empty input
+  if (req.body.profileImg) {
+    delete req.body.profileImg;
+  }
+  if (req.file) {
+    req.body.profileImg = req.file.filename;
+  }
+  next();
+};
 
 // @desc    Get list of users
 // @route   GET /api/v1/users
@@ -38,14 +59,31 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   const { name, slug, email, phone, profileImg, role, active } = req.body;
   const editObj = { name, slug, phone, email, profileImg, role, active };
 
+  const userBefore = await User.findById(id).select("profileImg");
+
   const user = await User.findByIdAndUpdate({ _id: id }, editObj, {
     new: true,
   });
 
   if (!user) {
+    // Delete any saved related images if any..
+    deleteRelatedImages({
+      functionType: "updateFailure",
+      profileImg,
+    });
+
+    // Send 404 error
     const error = new ApiError(`No user is found for this id: ${id}`, 404);
     return next(error);
   }
+
+  // Delete related removed image if any..
+  deleteRelatedImages({
+    functionType: "update",
+    profileImg,
+    userBefore,
+    userAfter: user,
+  });
 
   // Delete password from response
   delete user._doc.password;
@@ -126,13 +164,60 @@ exports.updateLoggedUserPassword = asyncHandler(async (req, res, next) => {
 // @access Private/Protect
 exports.updateLoggedUserData = asyncHandler(async (req, res, next) => {
   const userId = req.user._id;
-  const { name, slug, email, phone } = req.body;
-  const editObj = { name, slug, email, phone };
+  const { name, slug, email, phone, profileImg } = req.body;
+  const editObj = { name, slug, email, phone, profileImg };
+
+  const userBefore = await User.findById(userId).select("profileImg");
 
   const user = await User.findByIdAndUpdate({ _id: userId }, editObj, {
     new: true,
   });
 
+  // Delete related removed images if any..
+  deleteRelatedImages({
+    functionType: "update",
+    profileImg,
+    userBefore,
+    userAfter: user,
+  });
+
   delete user._doc.password;
   return res.status(200).json({ data: user });
 });
+
+// @desc helper function for images deletion
+const deleteRelatedImages = asyncHandler(
+  async ({ functionType, profileImg, userBefore, userAfter }) => {
+    let imageToDelete;
+
+    // Delete case
+    if (functionType === "delete") {
+      const deletedUser = userBefore;
+      imageToDelete = deletedUser.profileImg;
+    }
+
+    // Update case: successful
+    if (functionType === "update") {
+      const updatedUser = userAfter;
+      if (
+        (profileImg || profileImg === "") &&
+        userBefore.profileImg !== updatedUser.profileImg
+      ) {
+        imageToDelete = userBefore.profileImg;
+      }
+    }
+
+    // Update Failure case (404 error)
+    if (functionType === "updateFailure") {
+      if (profileImg) imageToDelete = "users/" + profileImg;
+    }
+
+    // Delete profile image
+    if (imageToDelete)
+      fileHelper.deleteFile(
+        `uploads/${imageToDelete.replace(process.env.BASE_URL, "")}`
+      );
+
+    return;
+  }
+);

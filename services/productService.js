@@ -7,6 +7,46 @@ const {
   createOne,
 } = require("./hanldersFactory");
 
+const uploadwithMulterMiddleware = require("../middlewares/uploadImageMiddleware");
+
+exports.uploadProductImages = uploadwithMulterMiddleware({
+  destFolderName: "products",
+  fileNamePrefix: "product",
+}).fields([
+  {
+    name: "imageCover",
+    maxCount: 1,
+  },
+  {
+    name: "images",
+    maxCount: 5,
+  },
+]);
+
+// Set images paths into body
+exports.setProductImages = (req, res, next) => {
+  // Accept only files or empty inputs
+  if (req.body.images) {
+    delete req.body.images;
+  }
+  if (req.body.imageCover) {
+    delete req.body.imagecover;
+  }
+
+  if (req.files?.imageCover) {
+    req.body.imageCover = req.files.imageCover[0].filename;
+  }
+  if (req.files?.images) {
+    req.body.images = req.files.images.map((img) => img.filename);
+  } else if (
+    (!req.files?.images && req.method !== "PUT") ||
+    req.body.images === ""
+  ) {
+    req.body.images = [];
+  }
+  next();
+};
+
 // @desc create product
 // @route POST /api/v1/products
 // @access Private

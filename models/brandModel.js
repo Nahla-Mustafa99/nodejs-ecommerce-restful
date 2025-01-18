@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // 1- Create a brand shcema
-const brand = new Schema(
+const brandSchema = new Schema(
   {
     name: {
       type: String,
@@ -17,5 +17,21 @@ const brand = new Schema(
   { timestamps: true }
 );
 
-// 2- export the model that build upon that shcema
-module.exports = mongoose.model("Brand", brand);
+const setFullImageURL = (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/brands/${doc.image}`;
+    doc.image = imageUrl;
+  }
+};
+// findOne, findAll and update
+brandSchema.post("init", (doc) => {
+  setFullImageURL(doc);
+});
+
+// create
+brandSchema.post("save", (doc) => {
+  setFullImageURL(doc);
+});
+
+// 2- export the model that build upon that schema
+module.exports = mongoose.model("Brand", brandSchema);

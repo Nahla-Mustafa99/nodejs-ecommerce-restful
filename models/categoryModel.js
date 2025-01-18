@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 // 1- Create a category shcema
-const categoryShcema = new Schema(
+const categorySchema = new Schema(
   {
     name: {
       type: String,
@@ -17,5 +17,21 @@ const categoryShcema = new Schema(
   { timestamps: true }
 );
 
-// 2- export the model that build upon that shcema
-module.exports = mongoose.model("Category", categoryShcema);
+const setFullImageURL = (doc) => {
+  if (doc.image) {
+    const imageUrl = `${process.env.BASE_URL}/categories/${doc.image}`;
+    doc.image = imageUrl;
+  }
+};
+// findOne, findAll and update
+categorySchema.post("init", (doc) => {
+  setFullImageURL(doc);
+});
+
+// create
+categorySchema.post("save", (doc) => {
+  setFullImageURL(doc);
+});
+
+// 2- export the model that build upon that schema
+module.exports = mongoose.model("Category", categorySchema);

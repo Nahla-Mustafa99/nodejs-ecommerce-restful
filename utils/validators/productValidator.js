@@ -1,4 +1,4 @@
-const { param, check, body } = require("express-validator");
+const { param, check, body, oneOf } = require("express-validator");
 const slugify = require("slugify");
 
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
@@ -210,6 +210,7 @@ exports.updateProductValidator = [
     .customSanitizer(removeDuplicatSubcategory)
     .custom(checkSubategoriesExist)
     .custom(checkSubcatBelongToCat),
+
   body("brand").optional().isMongoId().withMessage("invalid brand id format"),
   validatorMiddleware,
 ];
