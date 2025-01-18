@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-// 1- Create a subcategory shcema
+// 1- Create a product shcema
 const productSchema = new Schema(
   {
     title: {
