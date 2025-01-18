@@ -1,10 +1,11 @@
-const { param, checkExact, body, oneOf } = require("express-validator");
+const { param, checkExact, body } = require("express-validator");
 const slugify = require("slugify");
 
 const validatorMiddleware = require("../../middlewares/validatorMiddleware");
 const Category = require("../../models/categoryModel");
 const SubCategory = require("../../models/subCategoryModel");
 const Product = require("../../models/productModel");
+const Brand = require("../../models/brandModel");
 
 // @desc  custom validator validates that the given category exists..
 const checkCategoryExists = (val, { req }) => {
@@ -48,6 +49,15 @@ const checkSubcatBelongToCat = (subcategoriesList, { req }) => {
 // @desc Remove duplicates in the given subcategories list
 const removeDuplicatSubcategory = (subcategories, { req }) => {
   return (req.body.subcategories = Array.from(new Set(subcategories)));
+};
+
+// @desc  custom validator validates that the given brand exists..
+const checkBrandExists = (val, { req }) => {
+  return Brand.findById(val).then((brand) => {
+    if (!brand) {
+      return Promise.reject(new Error(`No brand for this id: ${val}`));
+    }
+  });
 };
 
 // Get Product Validators
@@ -161,7 +171,8 @@ exports.createProductValidator = [
       body("brand")
         .optional()
         .isMongoId()
-        .withMessage("invalid brand id format"),
+        .withMessage("invalid brand id format")
+        .custom(checkBrandExists),
     ],
     {
       message:
@@ -185,7 +196,10 @@ exports.updateProductValidator = [
         .withMessage("Too long Product title")
         .custom((val, { req }) => {
           return Product.findOne({ title: val }).then((productDoc) => {
-            if (productDoc) {
+            if (
+              productDoc &&
+              productDoc._id.toString() !== req.params.id.toString()
+            ) {
               return Promise.reject(
                 new Error(
                   `There is a product with this title '${val}' already, please pick a different one.`
@@ -270,7 +284,8 @@ exports.updateProductValidator = [
       body("brand")
         .optional()
         .isMongoId()
-        .withMessage("invalid brand id format"),
+        .withMessage("invalid brand id format")
+        .custom(checkBrandExists),
     ],
     {
       message:
