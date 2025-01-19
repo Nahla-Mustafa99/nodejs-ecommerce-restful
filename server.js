@@ -8,7 +8,7 @@ const rateLimit = require("express-rate-limit");
 const cors = require("cors");
 const compression = require("compression");
 
-dotenv.config({ path: "config.env" });
+dotenv.config();
 const db_connection = require("./config/database");
 const ApiError = require("./utils/apiError");
 const globalErrorHandler = require("./middlewares/errorMiddleware");
