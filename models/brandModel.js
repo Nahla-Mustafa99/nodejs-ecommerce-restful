@@ -8,7 +8,7 @@ const brandSchema = new Schema(
       type: String,
       unique: [true, "brand name must be unique"],
       required: [true, "brand name is required!"],
-      minlength: [3, "Too short brand name"],
+      minlength: [2, "Too short brand name"],
       maxlength: [32, "Too long brand name"],
     },
     slug: { type: String, lowercase: true, required: [true, "slug required!"] },
